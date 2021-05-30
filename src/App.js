@@ -93,7 +93,7 @@ function App() {
           </Button>
           </form>
 
-          <div style={{ width: "90vw", maxWidth: "500px", marginTop: "24px" }}>
+          <div style={{ width: "90vw", maxWidth: "90%", marginTop: "24px", flexDirection: "row"}}>
           {todos.map((todo) => (
             <TodoListItem
               todo={todo.todo}

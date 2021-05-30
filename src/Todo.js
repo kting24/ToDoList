@@ -27,16 +27,20 @@ export default function TodoListItem({todo, inprogress, id, notes}) {
           />
         </ListItem>
 
+        <div style={{ width: "190%" }}>
         <ListItem>
           <ListItemText
             primary={"notes: " + notes}
           />
         </ListItem>
+        </div>
 
-        <Button onClick={toggleInProgress}>
+        <Button onClick={toggleInProgress} style={{marginLeft: "100px"}}>
             {inprogress? "Completed" : "In Progress"} 
         </Button>
-        <Button onClick={deleteTodo}>X</Button>
+        <Button onClick={deleteTodo}>
+          X
+          </Button>
         </div>
     );
 }
