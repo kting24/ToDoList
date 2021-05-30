@@ -1,10 +1,11 @@
 import './App.css';
 import TextField from '@material-ui/core/TextField'; //text field element from Material UI framework
-import { useState, useEffect } from 'react';
-import { Button } from '@material-ui/core';
+import { useState, useEffect, classes } from 'react';
+import { Button, Menu } from '@material-ui/core';
 import firebase from "firebase";
 import { db } from "./firebase_config";
 import TodoListItem from "./Todo";
+import MenuItem from '@material-ui/core/MenuItem';
 
 function App() {
 
@@ -14,6 +15,9 @@ function App() {
    * useState(''): initial state */
   const [todoInput, setTodoInput] = useState("");
   const [noteInput, setNoteInput] = useState("");
+
+  const [priorityInput, setPriorityInput] = useState("");
+  const [deadlineInput, setDeadlineInput] = useState("");
 
   useEffect(() => {
     getTodos();
@@ -49,6 +53,8 @@ function App() {
 
     setTodoInput("");
     setNoteInput("");
+    setPriorityInput("");
+    setDeadlineInput("");
   }
 
   return (
@@ -88,10 +94,13 @@ function App() {
               style={{ maxWidth: "300px", width: "90vw" }}
             />
 
-          <TextField id="select" label="Priority" value="medium" select>
+          <TextField 
+          id="select" label="Priority" value="medium" 
+          select>
             <MenuItem value="high">High</MenuItem>
             <MenuItem value="medium">Medium</MenuItem>
             <MenuItem value="low">Low</MenuItem>
+            
           </TextField>
 
           <TextField
@@ -99,7 +108,7 @@ function App() {
             label="Deadline"
             type="datetime-local"
             defaultValue="2017-05-24T10:30"
-            className={classes.textField}
+            //className={classes.textField}
             InputLabelProps={{
               shrink: true,
             }}

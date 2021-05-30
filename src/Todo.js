@@ -7,13 +7,13 @@ export default function TodoListItem({todo, inprogress, id, notes, priority, dea
 
     function toggleInProgress() {
         db.collection("todo_tasks").doc(id).update({
-            inprogress: !inprogress, // sets inprogress to false (indicates completed)
-            if (!inprogress) { // if task is marked complete
-              this.setState({color:'green'});
-            } else { // if task is marked incomplete
-              this.setState({color:'red'});
-            }
+            inprogress: !inprogress // sets inprogress to false (indicates completed)
         });
+        if (inprogress) { // if task is marked complete
+          this.setState({color:'red'});
+        } else { // if task is marked incomplete
+          this.setState({color:'green'});
+        }
     }
 
     function deleteTodo() {
