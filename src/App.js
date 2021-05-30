@@ -26,7 +26,9 @@ function App() {
           id: doc.id,
           inprogress: doc.data().inprogress,
           todo: doc.data().todo,
-          notes: doc.data().notes
+          notes: doc.data().notes,
+          priority: doc.data().priority,
+          deadline: doc.data().deadline
         }))
       );
     });
@@ -40,7 +42,9 @@ function App() {
       inprogress: false,
       //timestamp: firebase.firestore.FieldValue.serverTimeStamp(), // get server timestamp from firebase
       todo: todoInput,
-      notes: noteInput
+      notes: noteInput,
+      priority: priorityInput,
+      deadline: deadlineInput
     });
 
     setTodoInput("");
@@ -62,6 +66,7 @@ function App() {
 
           <form>
             <TextField
+              required
               id="standard-basic"
               label="Write a To-Do Task"
 
@@ -83,6 +88,23 @@ function App() {
               style={{ maxWidth: "300px", width: "90vw" }}
             />
 
+          <TextField id="select" label="Priority" value="medium" select>
+            <MenuItem value="high">High</MenuItem>
+            <MenuItem value="medium">Medium</MenuItem>
+            <MenuItem value="low">Low</MenuItem>
+          </TextField>
+
+          <TextField
+            id="datetime-local"
+            label="Deadline"
+            type="datetime-local"
+            defaultValue="2017-05-24T10:30"
+            className={classes.textField}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+
             <Button
               type="submit"
               variant="contained"
@@ -98,8 +120,10 @@ function App() {
             <TodoListItem
               todo={todo.todo}
               inprogress={todo.inprogress}
-              id={todo.id} 
+              id={todo.id}
               notes={todo.notes}
+              priority={todo.priority}
+              deadline={todo.deadline}
               /> // pass in value into this func in Todo.js
           ))}
 

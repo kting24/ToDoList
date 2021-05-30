@@ -3,11 +3,16 @@ import { ListItem, ListItemText, Button, ButtonBase } from "@material-ui/core";
 import { db } from "./firebase_config";
 import Collapse from '@material-ui/core/Collapse';
 
-export default function TodoListItem({todo, inprogress, id, notes}) {
+export default function TodoListItem({todo, inprogress, id, notes, priority, deadline}) {
 
     function toggleInProgress() {
         db.collection("todo_tasks").doc(id).update({
             inprogress: !inprogress, // sets inprogress to false (indicates completed)
+            if (!inprogress) { // if task is marked complete
+              this.setState({color:'green'});
+            } else { // if task is marked incomplete
+              this.setState({color:'red'});
+            }
         });
     }
 
@@ -35,8 +40,20 @@ export default function TodoListItem({todo, inprogress, id, notes}) {
         </ListItem>
         </div>
 
+        <ListItem>
+          <ListItemText
+            primary={priority}
+          />
+        </ListItem>
+
+        <ListItem>
+          <ListItemText
+            primary={"deadline: " + deadline}
+          />
+        </ListItem>
+
         <Button onClick={toggleInProgress} style={{marginLeft: "100px"}}>
-            {inprogress? "Completed" : "In Progress"} 
+            {inprogress? "Completed" : "In Progress"}
         </Button>
         <Button onClick={deleteTodo}>
           X
