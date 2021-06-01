@@ -5,15 +5,10 @@ import Collapse from '@material-ui/core/Collapse';
 
 export default function TodoListItem({todo, inprogress, id, notes, priority, deadline}) {
 
-    function toggleInProgress() {
+    function toggleInProgress(event) {
         db.collection("todo_tasks").doc(id).update({
             inprogress: !inprogress // sets inprogress to false (indicates completed)
         });
-        if (inprogress) { // if task is marked complete
-          this.setState({color:'red'});
-        } else { // if task is marked incomplete
-          this.setState({color:'green'});
-        }
     }
 
     function deleteTodo() {
@@ -21,20 +16,21 @@ export default function TodoListItem({todo, inprogress, id, notes, priority, dea
       }
 
     return (
-        <div style={{ display: "flex" }}>
+        <div style={{ display: "flex"}}>
 
-        <ListItem
-        >
+        <ListItem>
           <ListItemText
+            style={{ width: "190%", display: "flex", flexDirection: "column" }}
             primary={todo}
             // if true, print "completed", else "in progress"
             secondary={inprogress ? "Completed" : "In progress"}
           />
         </ListItem>
 
-        <div style={{ width: "190%" }}>
+        <div style={{ width: "190%", display: "flex", flexDirection: "column" }}>
         <ListItem>
-          <ListItemText
+          <ListItemText 
+            style={{ width: "190%", display: "flex", flexDirection: "column"}}
             primary={"notes: " + notes}
           />
         </ListItem>
@@ -42,7 +38,7 @@ export default function TodoListItem({todo, inprogress, id, notes, priority, dea
 
         <ListItem>
           <ListItemText
-            primary={priority}
+            primary={"priority: " + priority}
           />
         </ListItem>
 
@@ -52,12 +48,14 @@ export default function TodoListItem({todo, inprogress, id, notes, priority, dea
           />
         </ListItem>
 
-        <Button onClick={toggleInProgress} style={{marginLeft: "100px"}}>
+        <Button id="progress" onClick={toggleInProgress} style={{}}>
             {inprogress? "Completed" : "In Progress"}
         </Button>
+
         <Button onClick={deleteTodo}>
           X
-          </Button>
+        </Button>
         </div>
     );
 }
+

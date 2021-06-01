@@ -2,10 +2,19 @@ import './App.css';
 import TextField from '@material-ui/core/TextField'; //text field element from Material UI framework
 import { useState, useEffect, classes } from 'react';
 import { Button, Menu } from '@material-ui/core';
-import firebase from "firebase";
 import { db } from "./firebase_config";
 import TodoListItem from "./Todo";
 import MenuItem from '@material-ui/core/MenuItem';
+
+import MuiMenuItem from "@material-ui/core/MenuItem";
+import { withStyles } from "@material-ui/core/styles";
+import * as firebase from 'firebase/app'
+import DateTimePicker from 'react-datetime-picker';
+
+import React from 'react';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 
 function App() {
 
@@ -17,11 +26,52 @@ function App() {
   const [noteInput, setNoteInput] = useState("");
 
   const [priorityInput, setPriorityInput] = useState("");
-  const [deadlineInput, setDeadlineInput] = useState("");
+  //const [deadlineInput, setDeadlineInput] = useState("");
+
+  const [deadlineInput, setDeadlineInput] = useState(new Date());
+
+  const options = [
+    'High',
+    'Medium',
+    'Low'
+  ];
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [selectedIndex, setSelectedIndex] = React.useState(1);
+
+  const MenuItem = withStyles({
+    root: {
+      justifyContent: "flex-end"
+    }
+  })(MuiMenuItem);
+
+  const handleClickListItem = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuItemClick = (event, index) => {
+    setSelectedIndex(index);
+    setAnchorEl(null);
+    setPriorityInput(options[index]);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   useEffect(() => {
     getTodos();
   }, []); // blank to run only on first launch, when something happens to the value here -> calls inside of useEffect
+
+  function convertTimestamp(timestamp) {
+    let date = timestamp.toDate();
+    let mm = date.getMonth() + 1;
+    let dd = date.getDate();
+    let yyyy = date.getFullYear();
+
+    date = mm + '/' + dd + '/' + yyyy;
+    return date;
+  }
 
   function getTodos() {
     db.collection("todo_tasks").onSnapshot(function (querySnapshot) { // reflected on real time database with onSnapshot
@@ -32,7 +82,7 @@ function App() {
           todo: doc.data().todo,
           notes: doc.data().notes,
           priority: doc.data().priority,
-          deadline: doc.data().deadline
+          deadline: convertTimestamp(doc.data().deadline)
         }))
       );
     });
@@ -53,8 +103,8 @@ function App() {
 
     setTodoInput("");
     setNoteInput("");
-    setPriorityInput("");
-    setDeadlineInput("");
+    setPriorityInput("Medium");
+    setDeadlineInput(new Date());
   }
 
   return (
@@ -68,63 +118,80 @@ function App() {
           width: "100%",
         }}
       >
-          <h1>To-Do List</h1>
 
-          <form>
-            <TextField
-              required
-              id="standard-basic"
-              label="Write a To-Do Task"
+        <h1>To-Do List</h1>
 
-              // detects when there are changes in text-field for todo task
-              value={todoInput}
-              onChange={(e) => setTodoInput(e.target.value)}
-
-              style={{ maxWidth: "300px", width: "90vw" }}
-            />
-
+        <form style={{
+          display: "flex",
+          flexDirection: "row",
+        }}>
           <TextField
-              id="standard-basic"
-              label="Notes"
+            required
+            id="standard-basic"
+            label="Write a To-Do Task"
 
-              // detects when there are changes in text-field for todo task
-              value={noteInput}
-              onChange={(e) => setNoteInput(e.target.value)}
+            // detects when there are changes in text-field for todo task
+            value={todoInput}
+            onChange={(e) => setTodoInput(e.target.value)}
 
-              style={{ maxWidth: "300px", width: "90vw" }}
-            />
-
-          <TextField 
-          id="select" label="Priority" value="medium" 
-          select>
-            <MenuItem value="high">High</MenuItem>
-            <MenuItem value="medium">Medium</MenuItem>
-            <MenuItem value="low">Low</MenuItem>
-            
-          </TextField>
-
-          <TextField
-            id="datetime-local"
-            label="Deadline"
-            type="datetime-local"
-            defaultValue="2017-05-24T10:30"
-            //className={classes.textField}
-            InputLabelProps={{
-              shrink: true,
-            }}
+            style={{ maxWidth: "300px", width: "90vw", marginRight: "10px" }}
           />
 
-            <Button
-              type="submit"
-              variant="contained"
-              onClick={addTodo}
-              //style={{ display: "none" }}
-              >
-              Submit
-          </Button>
-          </form>
+          <TextField
+            id="standard-basic"
+            label="Notes"
 
-          <div style={{ width: "90vw", maxWidth: "90%", marginTop: "24px", flexDirection: "row"}}>
+            // detects when there are changes in text-field for todo task
+            value={noteInput}
+            onChange={(e) => setNoteInput(e.target.value)}
+
+            style={{ maxWidth: "300px", width: "90vw" }}
+          />
+
+          <List style={{ padding: "0px", margin: "0px", maxWidth: "150px", width: "45vw" }}>
+            <ListItem
+              button
+              onClick={handleClickListItem}
+            >
+              <ListItemText primary="Priority Level" secondary={options[selectedIndex]} />
+            </ListItem>
+          </List>
+          <Menu
+            id="lock-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+            style={{ maxWidth: "150px", width: "45vw" }}
+          >
+            {options.map((option, index) => (
+              <MenuItem
+                key={option}
+                selected={index === selectedIndex}
+                onClick={(event) => handleMenuItemClick(event, index)}
+              >
+                {option}
+              </MenuItem>
+            ))}
+          </Menu>
+
+
+          <DateTimePicker
+            onChange={setDeadlineInput}
+            value={deadlineInput}
+          />
+
+          <Button
+            type="submit"
+            variant="contained"
+            onClick={addTodo}
+            style={{ margin: "20px" }}
+          >
+            Submit
+          </Button>
+        </form>
+
+        <div style={{ width: "90vw", maxWidth: "90%", marginTop: "24px", flexDirection: "row" }}>
           {todos.map((todo) => (
             <TodoListItem
               todo={todo.todo}
@@ -133,10 +200,10 @@ function App() {
               notes={todo.notes}
               priority={todo.priority}
               deadline={todo.deadline}
-              /> // pass in value into this func in Todo.js
+            /> // pass in value into this func in Todo.js
           ))}
-
         </div>
+
       </div>
     </div>
   );
@@ -145,3 +212,31 @@ function App() {
 export default App;
 
 // style {{}} format the elements
+/**
+ *    <TextField
+            id="select" label="Priority" value="medium"
+            select>
+            <MenuItem value="high"
+              onClick={(e) => setPriorityInput("High")}
+            >High</MenuItem>
+            <MenuItem value="medium"
+              onClick={(e) => setPriorityInput("Medium")}
+            >Medium</MenuItem>
+            <MenuItem value="low"
+              onClick={(e) => setPriorityInput("Low")}
+            >Low</MenuItem>
+
+          </TextField>
+
+            <TextField
+            id="datetime-local"
+            label="Deadline"
+            type="datetime-local"
+            defaultValue="2017-05-24T10:30"
+            //className={classes.textField}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            //onChange={(e) => setNoteInput(e.target.value)}
+          />
+ */
